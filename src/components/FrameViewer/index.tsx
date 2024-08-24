@@ -1,10 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import './styles.css';
 import { useFrames } from 'hooks/useFrame';
+import { Frame } from 'services/DemoService';
 
-const FrameViewer = () => {
-  const { setFrames, setSelectedDemo, selectedDemo, frames } = useFrames();
+interface FrameViewerProps {
+  onChange(frame: Frame | null): void;
+}
+
+const FrameViewer = ({ onChange }: FrameViewerProps) => {
+  const { frames } = useFrames();
 
   const [index, setIndex] = useState(0);
   const currentFrame = frames[index];
@@ -24,6 +29,22 @@ const FrameViewer = () => {
     iframeDocument.head.appendChild(style);
   };
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [hasTyped, setHasTyped] = useState(false);
+
+  const save = useCallback(() => {
+    if (!iframeRef.current) return;
+    const iframeDocument = iframeRef.current.contentDocument;
+    if (!iframeDocument) return;
+
+    setHasTyped(true);
+
+    onChange({
+      ...currentFrame,
+      html: `${iframeDocument.documentElement.outerHTML}`,
+    });
+  }, [iframeRef.current, currentFrame]);
+
   const enableEditing = () => {
     if (!iframeRef.current) return;
     const iframeDocument = iframeRef.current.contentDocument;
@@ -32,7 +53,8 @@ const FrameViewer = () => {
     disableTextSelection(iframeDocument);
     iframeDocument.addEventListener('dblclick', () => {
       iframeDocument.designMode = 'on';
-
+      setIsEditing(true);
+      iframeDocument.addEventListener('input', save);
       const styles = iframeDocument.head.querySelectorAll('style');
       styles.forEach((style) => {
         if (style.textContent?.includes('user-select: none')) {
@@ -49,6 +71,7 @@ const FrameViewer = () => {
         return prev;
       }
 
+      onChange(null);
       return newIndex;
     });
   };
@@ -61,6 +84,7 @@ const FrameViewer = () => {
         return prev;
       }
 
+      onChange(null);
       return newIndex;
     });
   };
@@ -69,7 +93,6 @@ const FrameViewer = () => {
     <div className="frame-viewer">
       <iframe
         className="iframe-component"
-        onChange={() => console.log('changes')}
         onLoad={enableEditing}
         ref={iframeRef}
         height={'100%'}
