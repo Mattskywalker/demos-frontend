@@ -8,28 +8,30 @@ import Page from 'components/Page';
 import FrameSelector from 'components/FrameSelector';
 import FrameViewer from 'components/FrameViewer';
 import FrameEditor from 'components/FrameEditor';
+import { useLoader } from 'hooks/useLoader';
+import { toast } from 'react-toastify';
 
 const demoService = new DemoService();
 
 const EditFrames = () => {
   const navigate = useNavigate();
+  const { disableLoading, enabelLoading, loading } = useLoader();
   const { pathname } = useLocation();
   const { demoid } = useParams();
   const { setFrames, setSelectedDemo, selectedDemo, frames } = useFrames();
 
+  const fetchData = useCallback(async () => {
+    if (!demoid) return;
+    if (!selectedDemo) {
+      const data = await demoService.getDemo(demoid);
+      data && setSelectedDemo(data);
+    }
+    const data = await demoService.getDemoFrames(demoid);
+
+    setFrames(data);
+  }, [demoid, selectedDemo]);
+
   useEffect(() => {
-    const fetchData = async () => {
-      if (!demoid) return;
-      if (!selectedDemo) {
-        const data = await demoService.getDemo(demoid);
-        data && setSelectedDemo(data);
-      }
-      const data = await demoService.getDemoFrames(demoid);
-
-      console.log('data', data);
-      setFrames(data);
-    };
-
     fetchData();
   }, [demoid]);
 
@@ -37,8 +39,35 @@ const EditFrames = () => {
 
   const handleSave = useCallback(async () => {
     if (!editedFrame) return;
+    enabelLoading();
 
-    const response = await demoService.saveFrame(editedFrame);
+    await demoService
+      .saveFrame(editedFrame)
+      .then(() => {
+        toast(
+          `Aletrações de frame ${editedFrame.order + 1} de ${selectedDemo?.name}, salvas com sucesso!`,
+          {
+            type: 'success',
+            position: 'top-left',
+            style: {
+              fontSize: '14px',
+            },
+          }
+        );
+        fetchData();
+      })
+      .catch(() => {
+        toast(`Não foi possivel salvar alterações.`, {
+          type: 'error',
+          position: 'top-left',
+          style: {
+            fontSize: '14px',
+          },
+        });
+      })
+      .finally(() => {
+        disableLoading();
+      });
   }, [editedFrame]);
 
   const handleFrameViewerChange = (frame: Frame) => {
@@ -49,12 +78,14 @@ const EditFrames = () => {
     <Page
       title="Demo > FrameList"
       breadCrumbs={{
-        path: ['demos', `visualizar ${selectedDemo?.name}`, 'editar'],
+        path: ['demos', `${selectedDemo?.name}`, 'editar'],
         backTo: pathname.replace('/edit', ''),
       }}
     >
       <div className="page-container">
         <div className="demo-info">
+          <h2>Editando ✏️: </h2>
+          <br />
           <h1>{selectedDemo?.name}</h1>
           <h2>
             {selectedDemo?.createdAt &&
@@ -72,9 +103,10 @@ const EditFrames = () => {
             <button
               style={{
                 transition: 'all 200ms linear',
-                display: !editedFrame ? 'none' : 'block',
+
                 width: '100%',
               }}
+              disabled={!editedFrame}
               onClick={() => handleSave()}
             >
               <h2>Salvar</h2>

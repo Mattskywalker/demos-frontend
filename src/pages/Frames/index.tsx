@@ -7,6 +7,8 @@ import { useFrames } from 'hooks/useFrame';
 import Page from 'components/Page';
 import FrameSelector from 'components/FrameSelector';
 import FrameViewer from 'components/FrameViewer';
+import { toast } from 'react-toastify';
+import { useLoader } from 'hooks/useLoader';
 
 const demoService = new DemoService();
 
@@ -15,6 +17,7 @@ const Frames = () => {
   const { pathname } = useLocation();
   const { demoid } = useParams();
   const { setFrames, setSelectedDemo, selectedDemo, frames } = useFrames();
+  const { disableLoading, enabelLoading, loading } = useLoader();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,8 +26,10 @@ const Frames = () => {
         const data = await demoService.getDemo(demoid);
         data && setSelectedDemo(data);
       }
+      enabelLoading();
       const data = await demoService.getDemoFrames(demoid);
       setFrames(data);
+      disableLoading();
     };
 
     fetchData();

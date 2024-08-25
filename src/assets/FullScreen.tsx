@@ -1,8 +1,5 @@
 import React from 'react';
-
-interface IconProps {
-  size: string;
-}
+import { IconProps } from './IconProps';
 
 const FullScreen = ({ size = '32px' }: IconProps) => {
   return (

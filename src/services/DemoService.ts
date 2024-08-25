@@ -74,7 +74,6 @@ export default class DemoService {
   }
 
   async saveFrame(frame: Frame) {
-    console.log('call saveFrame');
     try {
       const response = await fetch(`http://localhost:3001/frame/${frame.id}`, {
         method: 'PUT',
@@ -84,10 +83,10 @@ export default class DemoService {
         },
       });
       const data = (await response.json()) as Frame[];
+
       return data;
     } catch (e) {
-      console.log(e);
-      return [];
+      throw new Error(`cant save: ${e}`);
     }
   }
 }

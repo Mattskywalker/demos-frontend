@@ -4,11 +4,11 @@ import { useLocation } from 'react-router-dom';
 
 import './styles.css';
 
-const LoadingAnimation = () => {
+export const LoadingAnimation = () => {
   return (
     <div
       style={{
-        width: '100vw',
+        width: '100%',
         height: 'calc(100vh - 6.4rem)',
         display: 'flex',
         justifyContent: 'center',

@@ -1,25 +1,13 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import { Router } from '../src/router';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  // const [demos, setDemos] = useState<Demo[]>([]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await fetch('http://localhost:3001/demos', {
-  //       method: 'GET',
-  //     });
-
-  //     const data = await response.json();
-  //     setDemos([...data, ...data, ...data, ...data, ...data, ...data]);
-  //   };
-
-  //   fetchData();
-  // }, []);
-
   return (
     <>
+      <ToastContainer />
       <Router />
     </>
   );

@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './styles.css';
 import { useFrames } from 'hooks/useFrame';
 import { Frame } from 'services/DemoService';
+import { toast } from 'react-toastify';
+import { useLoader } from 'hooks/useLoader';
 
 interface FrameViewerProps {
   onChange?(frame: Frame | null): void;
@@ -11,6 +13,7 @@ interface FrameViewerProps {
 
 const FrameEditor = ({ onChange, canEdit = false }: FrameViewerProps) => {
   const { frames } = useFrames();
+  const { loading } = useLoader();
 
   const [index, setIndex] = useState(0);
   const currentFrame = frames[index];
@@ -32,20 +35,15 @@ const FrameEditor = ({ onChange, canEdit = false }: FrameViewerProps) => {
     iframeDocument.head.appendChild(style);
   };
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [hasTyped, setHasTyped] = useState(false);
-
   const save = useCallback(() => {
     if (!iframeRef.current) return;
     const iframeDocument = iframeRef.current.contentDocument;
     if (!iframeDocument) return;
 
-    setHasTyped(true);
-
     onChange &&
       onChange({
         ...currentFrame,
-        html: `${iframeDocument.documentElement.outerHTML}`,
+        html: `<!DOCTYPE html> ${iframeDocument.documentElement.outerHTML}`,
       });
   }, [iframeRef.current, currentFrame]);
 
@@ -68,7 +66,7 @@ const FrameEditor = ({ onChange, canEdit = false }: FrameViewerProps) => {
 
     iframeDocument.addEventListener('dblclick', () => {
       iframeDocument.designMode = 'on';
-      setIsEditing(true);
+
       iframeDocument.addEventListener('input', save);
       const styles = iframeDocument.head.querySelectorAll('style');
       styles.forEach((style) => {
@@ -108,6 +106,10 @@ const FrameEditor = ({ onChange, canEdit = false }: FrameViewerProps) => {
     clearChanges();
     setIndex(frame.order);
   };
+
+  if (loading) {
+    return <></>;
+  }
 
   return (
     <div className="wrapper">

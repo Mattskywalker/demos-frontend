@@ -5,14 +5,17 @@ import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { FrameProvider } from 'hooks/useFrame';
+import { LoaderProvider } from 'hooks/useLoader';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
     <HelmetProvider>
       <BrowserRouter>
-        <FrameProvider>
-          <App />
-        </FrameProvider>
+        <LoaderProvider>
+          <FrameProvider>
+            <App />
+          </FrameProvider>
+        </LoaderProvider>
       </BrowserRouter>
     </HelmetProvider>
   </StrictMode>
