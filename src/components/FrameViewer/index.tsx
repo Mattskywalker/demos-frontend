@@ -90,17 +90,29 @@ const FrameViewer = ({ onChange }: FrameViewerProps) => {
   };
 
   return (
-    <div className="frame-viewer">
-      <iframe
-        className="iframe-component"
-        onLoad={enableEditing}
-        ref={iframeRef}
-        height={'100%'}
-        srcDoc={currentFrame?.html}
-      />
+    <div className="wrapper">
+      <div className="frame-container">
+        <div className="frame-viewer">
+          <iframe
+            className="iframe-component"
+            onLoad={enableEditing}
+            ref={iframeRef}
+            height={'100%'}
+            srcDoc={currentFrame?.html}
+          />
+        </div>
+        <div className="frame-list">
+          {frames?.map((data) => (
+            <article className="frame-card">
+              <iframe srcDoc={data.html} />
+              <span className="overlay" />
+            </article>
+          ))}
+        </div>
+      </div>
       <div className="frame-selector">
         <button onClick={handlePrevFrame}>{'<'}</button>
-        <h2>{index + 1}</h2>
+        <h2>{currentFrame?.order + 1}</h2>
         <button onClick={handleNextFrame}>{'>'}</button>
       </div>
     </div>
