@@ -19,6 +19,11 @@ export const Router = () =>
       children: [{ path: '', element: <Frames /> }],
     },
     {
+      path: '/demo/:demoid/edit',
+      element: <DashboardLayout />,
+      children: [{ path: '', element: <EditFrame /> }],
+    },
+    {
       path: '/demo/:demoid/frame/:frameid',
       element: <DashboardLayout />,
       children: [{ path: '', element: <EditFrame /> }],
@@ -32,4 +37,4 @@ export const Router = () =>
 
 const Home = Loadable(lazy(() => import('pages/Home')));
 const Frames = Loadable(lazy(() => import('pages/Frames')));
-const EditFrame = Loadable(lazy(() => import('pages/EditFrame')));
+const EditFrame = Loadable(lazy(() => import('pages/EditFrames')));

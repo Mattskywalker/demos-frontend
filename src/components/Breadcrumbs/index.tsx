@@ -18,7 +18,7 @@ const Breadcrumbs = ({ path, backTo }: BreadcrumbsProps) => {
     <div className="breadcrumbs">
       <button onClick={handleNavigate}>{'<='}</button>
       {path.map((data) => (
-        <div>
+        <div key={data}>
           {'>'}
           <h3>{data}</h3>
         </div>

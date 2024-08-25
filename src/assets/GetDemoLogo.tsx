@@ -7,8 +7,8 @@ interface IconProps {
 const GetDemoLogo = ({ size = '32px' }: IconProps) => {
   return (
     <svg
-      width="32px"
-      height="32px"
+      width={size}
+      height={size}
       viewBox="0 0 250 250"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

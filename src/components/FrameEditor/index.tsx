@@ -6,9 +6,10 @@ import { Frame } from 'services/DemoService';
 
 interface FrameViewerProps {
   onChange?(frame: Frame | null): void;
+  canEdit?: boolean;
 }
 
-const FrameViewer = ({ onChange }: FrameViewerProps) => {
+const FrameEditor = ({ onChange, canEdit = false }: FrameViewerProps) => {
   const { frames } = useFrames();
 
   const [index, setIndex] = useState(0);
@@ -31,52 +32,50 @@ const FrameViewer = ({ onChange }: FrameViewerProps) => {
     iframeDocument.head.appendChild(style);
   };
 
-  const onIframeLoad = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [hasTyped, setHasTyped] = useState(false);
+
+  const save = useCallback(() => {
+    if (!iframeRef.current) return;
+    const iframeDocument = iframeRef.current.contentDocument;
+    if (!iframeDocument) return;
+
+    setHasTyped(true);
+
+    onChange &&
+      onChange({
+        ...currentFrame,
+        html: `${iframeDocument.documentElement.outerHTML}`,
+      });
+  }, [iframeRef.current, currentFrame]);
+
+  const enableEditing = () => {
+    if (!canEdit) return;
     if (!iframeRef.current) return;
     const iframeDocument = iframeRef.current.contentDocument;
     if (!iframeDocument) return;
 
     disableTextSelection(iframeDocument);
 
-    iframeDocument
-      .querySelector<HTMLButtonElement>('[data-testid="welcome-login-button"]')
-      ?.addEventListener('click', () => {
-        handleNextFrame();
-      });
-
-    iframeDocument
-      .querySelector<HTMLInputElement>('[id="email-input"]')
-      ?.addEventListener('input', () => {
-        handleNextFrame();
-      });
-
-    iframeDocument
-      .querySelector<HTMLButtonElement>('[class="continue-btn"]')
-      ?.addEventListener('click', () => {
-        handleNextFrame();
-      });
-
-    iframeDocument
-      .querySelector<HTMLInputElement>('[id="password"]')
-      ?.addEventListener('input', () => {
-        handleNextFrame();
-      });
-
-    iframeDocument
-      .querySelector<HTMLButtonElement>('[type="submit"]')
-      ?.addEventListener('click', () => {
-        handleNextFrame();
-      });
-
     iframeDocument.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
-      if (target.tagName === 'A') {
+      if (target.tagName === '') {
         e.stopPropagation();
         e.preventDefault();
         e.stopImmediatePropagation();
       }
+    });
 
-      console.log(e.target);
+    iframeDocument.addEventListener('dblclick', () => {
+      iframeDocument.designMode = 'on';
+      setIsEditing(true);
+      iframeDocument.addEventListener('input', save);
+      const styles = iframeDocument.head.querySelectorAll('style');
+      styles.forEach((style) => {
+        if (style.textContent?.includes('user-select: none')) {
+          style.remove();
+        }
+      });
     });
   };
 
@@ -116,7 +115,7 @@ const FrameViewer = ({ onChange }: FrameViewerProps) => {
         <div className="frame-viewer">
           <iframe
             className="iframe-component"
-            onLoad={onIframeLoad}
+            onLoad={enableEditing}
             ref={iframeRef}
             height={'100%'}
             srcDoc={currentFrame?.html}
@@ -147,4 +146,4 @@ const FrameViewer = ({ onChange }: FrameViewerProps) => {
   );
 };
 
-export default FrameViewer;
+export default FrameEditor;

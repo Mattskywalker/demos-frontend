@@ -7,10 +7,11 @@ import { useFrames } from 'hooks/useFrame';
 import Page from 'components/Page';
 import FrameSelector from 'components/FrameSelector';
 import FrameViewer from 'components/FrameViewer';
+import FrameEditor from 'components/FrameEditor';
 
 const demoService = new DemoService();
 
-const Frames = () => {
+const EditFrames = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { demoid } = useParams();
@@ -24,22 +25,32 @@ const Frames = () => {
         data && setSelectedDemo(data);
       }
       const data = await demoService.getDemoFrames(demoid);
+
+      console.log('data', data);
       setFrames(data);
     };
 
     fetchData();
   }, [demoid]);
 
-  const handleNavigateEdit = () => {
-    navigate(`${pathname}/edit`);
+  const [editedFrame, setEditedFrame] = useState<Frame | null>(null);
+
+  const handleSave = useCallback(async () => {
+    if (!editedFrame) return;
+
+    const response = await demoService.saveFrame(editedFrame);
+  }, [editedFrame]);
+
+  const handleFrameViewerChange = (frame: Frame) => {
+    setEditedFrame(frame);
   };
 
   return (
     <Page
       title="Demo > FrameList"
       breadCrumbs={{
-        path: ['demos', `${selectedDemo?.name}`],
-        backTo: '/demo',
+        path: ['demos', `visualizar ${selectedDemo?.name}`, 'editar'],
+        backTo: pathname.replace('/edit', ''),
       }}
     >
       <div className="page-container">
@@ -58,15 +69,22 @@ const Frames = () => {
               paddingTop: '1.8rem',
             }}
           >
-            <button style={{ width: '100%' }} onClick={handleNavigateEdit}>
-              <h2>Editar</h2>
+            <button
+              style={{
+                transition: 'all 200ms linear',
+                display: !editedFrame ? 'none' : 'block',
+                width: '100%',
+              }}
+              onClick={() => handleSave()}
+            >
+              <h2>Salvar</h2>
             </button>
           </div>
         </div>
-        <FrameViewer />
+        <FrameEditor canEdit onChange={handleFrameViewerChange} />
       </div>
     </Page>
   );
 };
 
-export default Frames;
+export default EditFrames;
