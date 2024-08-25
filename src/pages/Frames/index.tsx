@@ -45,7 +45,13 @@ const Frames = () => {
   };
 
   return (
-    <Page title="Demo > FrameList">
+    <Page
+      title="Demo > FrameList"
+      breadCrumbs={{
+        path: ['home', `visualizar ${selectedDemo?.name}`],
+        backTo: '/demo',
+      }}
+    >
       <div className="page-container">
         <div className="demo-info">
           <h1>{selectedDemo?.name}</h1>

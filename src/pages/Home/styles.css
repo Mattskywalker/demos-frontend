@@ -10,6 +10,7 @@
   justify-items: center;
   align-items: center;
   gap: 1.6rem;
+  height: 100%;
 
   h2 {
     font-size: xx-large;

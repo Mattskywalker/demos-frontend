@@ -10,8 +10,8 @@ const DashboardLayout = () => {
       <Header />
       <Main>
         <Outlet />
+        <Footer />
       </Main>
-      <Footer />
     </>
   );
 };
