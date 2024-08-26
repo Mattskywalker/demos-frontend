@@ -1,6 +1,6 @@
 import React from 'react';
 import './styles.css';
-import GetDemoLogo from 'assets/getDemoLogo';
+import GetDemoLogo from 'assets/GetDemoLogo';
 
 const Header = () => {
   return (
