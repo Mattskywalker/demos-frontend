@@ -22,10 +22,12 @@ export interface Demo {
   frames: Frame[];
 }
 
+const api = 'http://localhost:3001';
+
 export default class DemoService {
   async getDemo(demoid: string) {
     try {
-      const response = await fetch(`http://localhost:3001/demo/${demoid}`, {
+      const response = await fetch(`${api}/demo/${demoid}`, {
         method: 'GET',
       });
 
@@ -39,7 +41,7 @@ export default class DemoService {
 
   async getFrame(frameid: string) {
     try {
-      const response = await fetch(`http://localhost:3001/frame/${frameid}`, {
+      const response = await fetch(`${api}/frame/${frameid}`, {
         method: 'GET',
       });
 
@@ -53,7 +55,7 @@ export default class DemoService {
 
   async getAllDemos() {
     try {
-      const response = await fetch('http://localhost:3001/demos', {
+      const response = await fetch('${api}/demos', {
         method: 'GET',
       });
 
@@ -66,12 +68,9 @@ export default class DemoService {
 
   async getDemoFrames(demoId: string) {
     try {
-      const response = await fetch(
-        `http://localhost:3001/demo/${demoId}/frames`,
-        {
-          method: 'GET',
-        }
-      );
+      const response = await fetch(`${api}/demo/${demoId}/frames`, {
+        method: 'GET',
+      });
 
       const data = (await response.json()) as Frame[];
       return data;
@@ -82,7 +81,7 @@ export default class DemoService {
 
   async saveFrame(frame: Frame) {
     try {
-      const response = await fetch(`http://localhost:3001/frame/${frame.id}`, {
+      const response = await fetch(`${api}/frame/${frame.id}`, {
         method: 'PUT',
         body: JSON.stringify(frame),
         headers: {
