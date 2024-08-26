@@ -9,6 +9,7 @@ import FrameSelector from 'components/FrameSelector';
 import FrameViewer from 'components/FrameViewer';
 import { toast } from 'react-toastify';
 import { useLoader } from 'hooks/useLoader';
+import DemoInfo from 'components/DemoInfo';
 
 const demoService = new DemoService();
 
@@ -48,26 +49,17 @@ const Frames = () => {
       }}
     >
       <div className="page-container">
-        <div className="demo-info">
-          <h1>{selectedDemo?.name}</h1>
-          <h2>
-            {selectedDemo?.createdAt &&
-              new Date(selectedDemo?.createdAt).toLocaleDateString()}
-          </h2>
-
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1.2rem',
-              paddingTop: '1.8rem',
-            }}
-          >
-            <button style={{ width: '100%' }} onClick={handleNavigateEdit}>
-              <h2>Editar</h2>
-            </button>
-          </div>
-        </div>
+        {selectedDemo && (
+          <DemoInfo
+            demo={selectedDemo}
+            buttonDataList={[
+              {
+                label: 'Editar',
+                callback: handleNavigateEdit,
+              },
+            ]}
+          />
+        )}
         <FrameViewer />
       </div>
     </Page>

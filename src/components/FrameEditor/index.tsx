@@ -5,6 +5,7 @@ import { useFrames } from 'hooks/useFrame';
 import { Frame } from 'services/DemoService';
 import { toast } from 'react-toastify';
 import { useLoader } from 'hooks/useLoader';
+import FrameListSelector from 'components/FrameListSelector';
 
 interface FrameViewerProps {
   onChange?(frame: Frame | null): void;
@@ -102,7 +103,7 @@ const FrameEditor = ({ onChange, canEdit = false }: FrameViewerProps) => {
     });
   };
 
-  const handleOverlayClick = (frame: Frame) => () => {
+  const handleOverlayClick = (frame: Frame) => {
     clearChanges();
     setIndex(frame.order);
   };
@@ -123,21 +124,11 @@ const FrameEditor = ({ onChange, canEdit = false }: FrameViewerProps) => {
             srcDoc={currentFrame?.html}
           />
         </div>
-        <div className="frame-list">
-          {frames?.map((data) => (
-            <article
-              style={{
-                backgroundColor:
-                  index === data.order ? '#646cff' : 'transparent',
-              }}
-              key={data.id}
-              className="frame-card"
-            >
-              <iframe srcDoc={data.html} />
-              <span onClick={handleOverlayClick(data)} className="overlay" />
-            </article>
-          ))}
-        </div>
+        <FrameListSelector
+          frameIndex={index}
+          frameList={frames}
+          onSelect={handleOverlayClick}
+        />
       </div>
       <div className="frame-selector">
         <button onClick={handlePrevFrame}>{'<'}</button>

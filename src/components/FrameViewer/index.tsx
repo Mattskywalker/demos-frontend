@@ -4,6 +4,8 @@ import './styles.css';
 import { useFrames } from 'hooks/useFrame';
 import { Frame } from 'services/DemoService';
 import { useLoader } from 'hooks/useLoader';
+import StartModal from './components/StartModal';
+import FrameListSelector from '../FrameListSelector';
 
 interface FrameViewerProps {
   onChange?(frame: Frame | null): void;
@@ -119,7 +121,7 @@ const FrameViewer = ({ onChange }: FrameViewerProps) => {
     });
   };
 
-  const handleOverlayClick = (frame: Frame) => () => {
+  const handleOverlayClick = (frame: Frame) => {
     setIndex(frame.order);
   };
 
@@ -129,7 +131,7 @@ const FrameViewer = ({ onChange }: FrameViewerProps) => {
     iframeRef.current.requestFullscreen();
   };
 
-  const [openTooltip, setOpenTooltip] = useState(false);
+  const [demoStarted, setDemoStarted] = useState(false);
 
   if (loading) {
     return <></>;
@@ -148,39 +150,21 @@ const FrameViewer = ({ onChange }: FrameViewerProps) => {
           />
           <span
             ref={TooltipRef}
-            style={{ visibility: openTooltip ? 'visible' : 'hidden' }}
+            style={{ visibility: demoStarted ? 'visible' : 'hidden' }}
             className="tooltip"
           />
 
-          {!openTooltip && (
-            <span className="start-modal-overlay">
-              <article>
-                <h2>Seja bem-vindo!</h2>
-                <p>
-                  {`Veja aqui uma demonstração do ${selectedDemo?.name} desenvolvida por uma pessoa que quer ser Getdemo.`}
-                </p>
-                <button onClick={() => setOpenTooltip(true)}>
-                  Iniciar agora 🚀
-                </button>
-              </article>
-            </span>
-          )}
+          <StartModal
+            demoName={selectedDemo?.name || ''}
+            isOpen={!demoStarted}
+            onStart={() => setDemoStarted(true)}
+          />
         </div>
-        <div className="frame-list">
-          {frames?.map((data) => (
-            <article
-              style={{
-                backgroundColor:
-                  index === data.order ? '#646cff' : 'transparent',
-              }}
-              key={data.id}
-              className="frame-card"
-            >
-              <iframe srcDoc={data.html} />
-              <span onClick={handleOverlayClick(data)} className="overlay" />
-            </article>
-          ))}
-        </div>
+        <FrameListSelector
+          frameIndex={index}
+          frameList={frames}
+          onSelect={handleOverlayClick}
+        />
       </div>
       <div className="frame-selector">
         <button onClick={handlePrevFrame}>{'<'}</button>
