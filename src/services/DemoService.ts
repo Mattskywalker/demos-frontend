@@ -1,3 +1,4 @@
+import { GlobalEventHandlersEventMap } from 'Interfaces/GlobalEventHandlersEventMap';
 export interface Frame {
   createdAt: Date;
   demoId: string;
@@ -5,6 +6,12 @@ export interface Frame {
   id: string;
   order: number;
   updatedAt: Date;
+  event: {
+    event: keyof GlobalEventHandlersEventMap;
+    selectors: string;
+    title: string;
+    text: string;
+  };
 }
 
 export interface Demo {

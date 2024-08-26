@@ -1,77 +1,9 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import './styles.css';
 import { useFrames } from 'hooks/useFrame';
 import { Frame } from 'services/DemoService';
 import { useLoader } from 'hooks/useLoader';
-import FullScreen from 'assets/FullScreen';
-
-interface ModalData {
-  title: string;
-  text: string;
-}
-interface DemoEvents {
-  selectors: string;
-  event: keyof GlobalEventHandlersEventMap;
-  modal: ModalData;
-}
-
-const demoEventList: DemoEvents[] = [
-  {
-    selectors: '[data-testid="welcome-login-button"]',
-    event: 'click',
-    modal: {
-      title: 'Vamos começar? ▶️',
-      text: 'Clique aqui para fazer login e inicie sua demonstração no ChatGPT. Basta ir clicando nos pontos indicados ao longo da jornada.',
-    },
-  },
-  {
-    selectors: '[id="email-input"]',
-    event: 'input',
-    modal: {
-      title: 'Digite seu email 👤',
-      text: 'Clique no campo email e digite.',
-    },
-  },
-  {
-    selectors: '[class="continue-btn"]',
-    event: 'click',
-    modal: {
-      title: 'Clique em continuar ▶️',
-      text: 'Clique no campo senha e digite.',
-    },
-  },
-  {
-    selectors: '[id="password"]',
-    event: 'input',
-    modal: {
-      title: 'Digite sua senha 🔑',
-      text: 'Clique no campo senha e digite.',
-    },
-  },
-  {
-    selectors: '[type="submit"]',
-    event: 'click',
-    modal: {
-      title: 'Clique em continuar ▶️',
-      text: 'Clique no botão continuar para fazer Login',
-    },
-  },
-  {
-    selectors: '[role="presentation"]',
-    event: 'click',
-    modal: {
-      title: 'Bem vindo a tela inicial 🎇',
-      text: 'E esse foi o fluxo de login',
-    },
-  },
-];
 
 interface FrameViewerProps {
   onChange?(frame: Frame | null): void;
@@ -128,7 +60,7 @@ const FrameViewer = ({ onChange }: FrameViewerProps) => {
     (iframeDocument: Document) => {
       if (!TooltipRef.current) return;
 
-      const event = demoEventList[index];
+      const event = currentFrame.event;
 
       const element = iframeDocument.querySelector<HTMLButtonElement>(
         event.selectors
@@ -143,9 +75,9 @@ const FrameViewer = ({ onChange }: FrameViewerProps) => {
 
       TooltipRef.current.innerHTML = `
         <h2>
-          <strong>${event.modal.title}</strong>
+          <strong>${event.title}</strong>
         </h2>
-        <p>${event.modal.text}</p>
+        <p>${event.text}</p>
       `;
 
       const buttonCenterY = rect.top + rect.height / 2;
@@ -233,12 +165,6 @@ const FrameViewer = ({ onChange }: FrameViewerProps) => {
               </article>
             </span>
           )}
-          <span
-            onClick={() => {
-              handleFullScreen();
-            }}
-            className="fullscreen"
-          />
         </div>
         <div className="frame-list">
           {frames?.map((data) => (
